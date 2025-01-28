@@ -32,14 +32,17 @@ y_train, y_test = y[:train_size], y[train_size:]
 
 
 class LSTMModel(nn.Module):
-    def __init__(self, input_size, hidden_size):
+    def __init__(self, input_size, hidden_size, dropout_rate= 0.2):
         super(LSTMModel, self).__init__()
-        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True)
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers=5, batch_first=True)
+        self.dropout = nn.Dropout(dropout_rate)
         self.fc = nn.Linear(hidden_size, 1)
+
 
     def forward(self, x):
         _, (hidden, _) = self.lstm(x)
-        return self.fc(hidden[-1])
+        hidden = self.dropout(hidden[-1])
+        return self.fc(hidden)
 
 input_size = 1
 hidden_size = 50  # Number of LSTM units
